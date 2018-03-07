@@ -5,12 +5,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/examplepost")
@@ -49,6 +52,23 @@ public class ExamplePostController {
         ModelAndView modelAndView = new ModelAndView(RESULT_VIEW);
         modelAndView.addObject("person", person);
         LOGGER.info("TEMPLATE: '" + RESULT_VIEW + "' -- DATA: '" + person + "'");
+        return modelAndView;
+    }
+
+    // Validate Forms - Validate watching object ('Person') annotations (in its attributes)
+    @PostMapping("/addPersonWithValidation")
+    public ModelAndView addPersonWithValidation(
+            @Valid @ModelAttribute("person") Person person,
+            BindingResult bindingResult) {
+        ModelAndView modelAndView = new ModelAndView();
+        if (bindingResult.hasErrors()) {
+            modelAndView.setViewName(FORM_VIEW);
+        }
+        else {
+            modelAndView.setViewName(RESULT_VIEW);
+            modelAndView.addObject("person", person);
+        }
+
         return modelAndView;
     }
 }
